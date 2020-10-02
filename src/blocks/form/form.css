@@ -1,0 +1,21 @@
+
+@import url(__title/form__title.css);
+@import url(__close/form__close.css);
+@import url(__edit/form__edit.css);
+@import url(__edt-text/form__edt-text.css);
+@import url(__edt-text/_type/form__edt-text_type_error.css);
+@import url(__submit/form__submit.css);
+@import url(__submit/_disable/form__submit_disable.css);
+@import url(__error/form__error.css);
+@import url(_type/form_type_add.css);
+@import url(_type/form_type_delete.css);
+
+
+
+.form {
+	display: flex;
+	flex-direction: row;
+	justify-content:  flex-start;
+	align-items: flex-start;
+	font-family: 'Inter', Arial, sans-serif;
+}
