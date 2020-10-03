@@ -4,29 +4,26 @@
 		this.headers = apiData.headers; /** объект */
 	}
 
+	_handleOriginalResponse = (res) => {
+		if (!res.ok) {
+		return Promise.reject(new Error(`Ошибка: ${res.status}`));
+		}
+		return res.json();
+	}
+
 
 	getInitialCards() {
 		return fetch(`${this.baseUrl}cards`, {
 			headers: this.headers
 		})
-			.then(res => {
-			if (res.ok) {   return res.json(); 	}
-			// если ошибка, отклоняем промис
-			return Promise.reject(`Ошибка: ${res.status}`)
-		});
-		
+			.then(this._handleOriginalResponse);
 	}
 
 	getInitialUser() {
 		return fetch(`${this.baseUrl}users/me`, {
 			headers: this.headers
 		})
-			.then(res => {
-			if (res.ok) {   return res.json(); 	}
-			// если ошибка, отклоняем промис
-			return Promise.reject(`Ошибка: ${res.status}`)
-		});
-		
+		.then(this._handleOriginalResponse);
 	}
 
 	putUserInfo(item) {
@@ -34,13 +31,8 @@
 			method: 'PATCH',
 			headers: this.headers,
 			body: JSON.stringify(item)
-		}
-		)
-			.then(res => {
-			if (res.ok) {   return res.json(); 	}
-			// если ошибка, отклоняем промис
-			return Promise.reject(`Ошибка: ${res.status}`)
-		});
+		})
+		.then(this._handleOriginalResponse);
 		
 	}
 
@@ -51,14 +43,8 @@
 			method: 'PATCH',
 			headers: this.headers,
 			body: JSON.stringify(avatar)
-		}	
-		)
-			.then(res => {
-			if (res.ok) {   return res.json(); 	}
-			// если ошибка, отклоняем промис
-			return Promise.reject(`Ошибка: ${res.status}`)
-		});
-		
+		})
+		.then(this._handleOriginalResponse);
 	}
 
 
@@ -67,13 +53,7 @@
 			method: 'DELETE',
 			headers: this.headers
 		})
-		.then(res => {
-			if (res.ok) {
-				return res.json()
-			}
-		return Promise.reject(`Ошибка: ${res.status}`)
-		})
-	
+		.then(this._handleOriginalResponse);
 	}
 	
 	createCard (item) { 
@@ -82,8 +62,8 @@
 			headers: this.headers,
 			body: JSON.stringify(item)
 		})
-		.then(res => res.json())
-		}
+		.then(this._handleOriginalResponse);
+	}
 	
 
 	putLike (id) {
@@ -91,34 +71,21 @@
 				method: 'PUT',
 				headers: this.headers
 			})
-			.then(res => {
-				if (res.ok) {
-					return res.json()
-				}
-			return Promise.reject(`Ошибка: ${res.status}`)
-			})
-		
-		}
+			.then(this._handleOriginalResponse);
+	}
 
 	deleteLike (id) {
 			return fetch(`${this.baseUrl}cards/likes/${id}`, {
 				method: 'DELETE',
 				headers: this.headers
 			})
-			.then(res => {
-				if (res.ok) {
-					return res.json()
-				}
-			return Promise.reject(`Ошибка: ${res.status}`)
-			})
-		
+			.then(this._handleOriginalResponse);
 		}
 
 	changeLikeCardStatus(id, isLiked) {
 		const res = isLiked ? this.putLike(id) : this.deleteLike(id);
 		return res;
-		}
-
+	}
 
 }
 
