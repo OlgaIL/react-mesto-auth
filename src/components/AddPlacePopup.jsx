@@ -28,7 +28,7 @@ function AddPlacePopup (props) {
 				name:'',
 				link:''
 			});
-		}, 1000);
+		}, 3000);
 		
 	}
 
