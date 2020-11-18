@@ -1,6 +1,15 @@
-import React, {useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
+
+
 import Header from './Header';
 import Main from './Main';
+
+import Login from './Login';
+import Register from './Register';
+import ProtectedRoute from './ProtectedRoute'; // импортируем HOC
+
+
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import EditProfilePopup from './EditProfilePopup';
@@ -8,7 +17,11 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 
 import ImagePopup from './ImagePopup';
+
 import api from '../utils/api';
+import { getToken } from '../utils/token';
+import  userAuth from '../utils/auth';
+
 
 import {CurrentUserContext} from '../context/CurrentUserContext';
 
@@ -22,6 +35,40 @@ function App() {
 	const [selectedCard, setSelectedCard] = React.useState(null);
 	const [currentUser, setCurrentUser] = React.useState(null);
 	const [cards, setCards] = React.useState([]);
+
+	const [isRegister , setIsRegister] = React.useState(false);
+	const [loggedIn , setIsLoggedIn] = React.useState(false);
+
+	const [userData, setUserData] = useState({ username: '', email: ''});
+	const history = useHistory();
+
+	const handleLogin = (userData) => {
+		setUserData(userData);
+		setIsLoggedIn(true);
+	}
+
+
+	const tokenCheck = () => {
+		const jwt = getToken();
+		if (!jwt) {
+		return;
+			}
+		
+		userAuth.getContent(jwt).then((res) => {
+				if (res) {
+					const userData = {
+						username: res.username,
+						email: res.email
+					}
+					setIsLoggedIn(true);
+					setUserData(userData);
+					history.push('/cards')
+				}
+			});
+	}
+
+
+	
 
 	const loadUserInfoandCards = async ()  => {
 		try{
@@ -38,6 +85,8 @@ function App() {
 
 	useEffect(() => {
 		loadUserInfoandCards();
+		tokenCheck();
+
 	}, []);
 
 
@@ -123,21 +172,53 @@ function App() {
 		.catch(err=>console.log(err));
 	}
 
+	function handleOnRegister (password, username) {
+		userAuth.register(password, username)
+			.then((res) => {
+				if (res) {
+				setIsRegister(true);
+				history.push('/sign-in');
+
+				}else{
+				setIsRegister(false);
+				history.push('/sign-up');
+
+			}})
+			.catch(err=>console.log(err));
+	}
+
 
 	return (
 	<CurrentUserContext.Provider value={currentUser}>
 		<div className="App">
 			<div className="page">
-				<Header />
-						<Main
-							onEditAvatar={handleEditAvatarClick}
-							onEditProfile ={handleEditProfileClick}
-							onAddPlace ={handleAddPlaceClick}
-							onCardClick={handleCardClick}
-							onDeleteImg = {handleDeleteClick} 
-							cards = {cards}
-							onCardLike ={handleCardLike}
-							onCardDelete ={handleCardDelete} />
+				<Header  loggedIn={loggedIn} />
+				<Switch>
+					<ProtectedRoute path="/cards" loggedIn={loggedIn}>
+							<Main
+								onEditAvatar={handleEditAvatarClick}
+								onEditProfile ={handleEditProfileClick}
+								onAddPlace ={handleAddPlaceClick}
+								onCardClick={handleCardClick}
+								onDeleteImg = {handleDeleteClick} 
+								cards = {cards}
+								onCardLike ={handleCardLike}
+								onCardDelete ={handleCardDelete} />
+					</ProtectedRoute>
+						
+
+					<Route path="/sign-up">
+						<Register onRegister={handleOnRegister} />
+					</Route>
+					<Route path="/sign-in">
+						<Login  handleLogin={handleLogin} />
+					</Route>
+
+					<Route exact path="/">
+						{loggedIn ? <Redirect to="/cards" /> : <Redirect to="/sign-in" />}
+					</Route>
+
+				</Switch>
 				<Footer />
 			</div>
 
@@ -156,10 +237,13 @@ function App() {
 						isOpen = {isImagePopupOpen}
 						onClose = {closeAllPopups}
 						card = {selectedCard} />
+				
+				
 
 		</div>
 	</CurrentUserContext.Provider>
 	);
+
 }
 
 export default App;

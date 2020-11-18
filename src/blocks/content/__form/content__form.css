@@ -1,0 +1,6 @@
+.content__form{
+	display: flex;
+	justify-content: center;
+	background-color: red;
+	height: 80vh;
+}

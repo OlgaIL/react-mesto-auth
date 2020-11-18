@@ -5,6 +5,7 @@
 
 @import url(./blocks/page/page.css);
 @import url(./blocks/header/header.css);
+@import url(./blocks/content/__form/content__form.css);
 @import url(./blocks/lead/lead.css);
 
 @import url(./blocks/elements/elements.css);
@@ -18,6 +19,7 @@
 @import url(./blocks/popup/_bigimage/popup_bigimage.css);
 
 @import url(./blocks/form/form.css);
+@import url(./blocks/form/_type/form_type_login.css);
 @import url(./blocks/footer/footer.css);
 
 body {

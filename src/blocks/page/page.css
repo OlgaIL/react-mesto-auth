@@ -3,6 +3,7 @@
   max-width: 882px;
   margin: 0 auto;
 
+
   font-family: 'Inter', Arial, sans-serif;
   color: #fff;
 
@@ -15,6 +16,7 @@
 
   background-color: #000;
   box-sizing: border-box;
+  height: 100vh;
 }
 
 

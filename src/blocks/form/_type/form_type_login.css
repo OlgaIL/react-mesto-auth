@@ -1,0 +1,11 @@
+.form_type_login{
+	width: 447px;
+	background-color: seagreen;
+}
+
+@media all and (max-width: 500px) {
+	.form_type_login {
+		width: 90%;
+		min-width: 300px;
+	}
+}
