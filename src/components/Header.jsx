@@ -1,14 +1,14 @@
 import React from 'react';
 import logoMesto from '../images/logo.svg';
+import Profile from './Profile';
+import Enter from './Enter';
 
 /**{loggedIn ? <UserInfo / > : <NavReg />} */
-function Header({loggedIn}) {
+function Header({loggedIn, userData, onLogOut}) {
 	return (
 		<header className="header">
-		<img src={logoMesto} className="header__logo" alt="Место" />
-			
-		<a className="header__link" href="/sign-up">Регистрация</a>
-
+			<img src={logoMesto} className="header__logo" alt="Место" />
+			{ loggedIn ? <Profile onLogOut={onLogOut}  userData={userData} /> : <Enter /> }
 		</header>
 	);
 }

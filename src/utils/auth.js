@@ -14,11 +14,13 @@ class Auth {
 				errorMassage.statusText = 'некорректно заполнено одно из полей ';
 			} else {
 					errorMassage.statusText = res.statusText;
+					console.log(res.status);
 				};
 			return Promise.reject(errorMassage);
 		}
 		return res.json();
 	}
+
 
 	register (password, email) {
 		return fetch(`${BASE_URL}/signup`, {
@@ -35,25 +37,26 @@ class Auth {
 			headers: this.headers,
 			body: JSON.stringify({password, email})
 		})
-			.then((response => response.json()))
-			.then((data) => {
-					if (data.user){
-						setToken(data.jwt);
-						return data;
-					} else {
-						return;
-					}
-				})
-			.catch(err => console.log(err))
+		.then((response => response.json()))
+		.then((data) => {
+			console.log(data);
+			if (data.token){
+					setToken (data.token);
+					return data;
+				} else {
+					return;}
+			})
 	};
 
 	getContent (token) {
 		this.headers.Authorization =  `Bearer ${token}`;
+		console.log(this.headers);
 			return fetch(`${BASE_URL}/users/me`, {
 			method: 'GET',
 			headers: this.headers
 			})
-			.then(this._handleOriginalResponse);
+			.then((response => response.json()))
+			.then(data => data);
 	};
 }
 
@@ -64,6 +67,7 @@ const userAuth = new Auth({
 		'Accept': 'application/json'
 	}
 });
+
 
 
 export default userAuth;

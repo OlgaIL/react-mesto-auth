@@ -17,9 +17,10 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 
 import ImagePopup from './ImagePopup';
+import InfoPopup from './InfoPopup';
 
 import api from '../utils/api';
-import { getToken } from '../utils/token';
+import  {getToken, removeToken} from '../utils/token';
 import  userAuth from '../utils/auth';
 
 
@@ -36,16 +37,16 @@ function App() {
 	const [currentUser, setCurrentUser] = React.useState(null);
 	const [cards, setCards] = React.useState([]);
 
-	const [isRegister , setIsRegister] = React.useState(false);
+	const [isRegister , setIsRegister] = React.useState(false); // не регистрация
 	const [loggedIn , setIsLoggedIn] = React.useState(false);
 
-	const [userData, setUserData] = useState({ username: '', email: ''});
+	const [isInfoToolOpen, setIsInfoToolOpen] = React.useState(false);
+	const [InfoToolValue, setInfoToolValue] = useState({ infoText: '', infoType: '', name:''});
+
+
+	const [userData, setUserData] = useState({ email: ''});
 	const history = useHistory();
 
-	const handleLogin = (userData) => {
-		setUserData(userData);
-		setIsLoggedIn(true);
-	}
 
 
 	const tokenCheck = () => {
@@ -53,17 +54,18 @@ function App() {
 		if (!jwt) {
 		return;
 			}
-		
+
 		userAuth.getContent(jwt).then((res) => {
 				if (res) {
+					console.log(res);
 					const userData = {
-						username: res.username,
-						email: res.email
+							email: res.data.email
 					}
 					setIsLoggedIn(true);
 					setUserData(userData);
 					history.push('/cards')
 				}
+				
 			});
 	}
 
@@ -86,7 +88,6 @@ function App() {
 	useEffect(() => {
 		loadUserInfoandCards();
 		tokenCheck();
-
 	}, []);
 
 
@@ -118,6 +119,7 @@ function App() {
 				setIsDeletePopupOpen(false);
 				setIsImagePopupOpen(false);
 				setSelectedCard(null);
+				setIsInfoToolOpen(false);
 	}
 	
 	function handleCardLike (card) {
@@ -172,19 +174,46 @@ function App() {
 		.catch(err=>console.log(err));
 	}
 
-	function handleOnRegister (password, username) {
-		userAuth.register(password, username)
+	function handleOnRegister (password, email) {
+		userAuth.register(password, email)
 			.then((res) => {
 				if (res) {
-				setIsRegister(true);
+				setInfoToolValue({infoText: 'Вы успешно зарегистрировались!', infoType: 'popup__info-image', name: 'Успешно'});
+				setIsInfoToolOpen(true);
+				setIsRegister(false); 
 				history.push('/sign-in');
+				}
+			})
+			.catch((err) => {
+				setIsRegister(true);
+				setInfoToolValue({infoText: 'Что-то пошло не так! Попробуйте еще раз.', infoType: 'popup__info-image popup__info-image_err', name: 'Ошибка'});
+				setIsInfoToolOpen(true);
+				console.log(err);
+			});
+	}
 
-				}else{
-				setIsRegister(false);
-				history.push('/sign-up');
 
-			}})
-			.catch(err=>console.log(err));
+	function handleOnLogin (password, email) {
+		userAuth.authorize(password, email)
+			.then((res) => {
+				if (res.token) {
+					setIsLoggedIn(true);
+					tokenCheck();
+					history.push('/cards');
+				}
+			})
+			.catch((err) => {
+				setInfoToolValue({infoText: 'Что-то пошло не так! Попробуйте еще раз.', infoType: 'popup__info-image popup__info-image_err', name: 'Ошибка'});
+				setIsInfoToolOpen(true);
+				console.log(err);
+			});
+
+	}
+
+	function handleOnLoguot(){
+		removeToken();
+		setIsLoggedIn(false);
+		history.push('/sign-in');
 	}
 
 
@@ -192,7 +221,7 @@ function App() {
 	<CurrentUserContext.Provider value={currentUser}>
 		<div className="App">
 			<div className="page">
-				<Header  loggedIn={loggedIn} />
+				<Header  loggedIn={loggedIn} userData={userData} onLogOut={handleOnLoguot} />
 				<Switch>
 					<ProtectedRoute path="/cards" loggedIn={loggedIn}>
 							<Main
@@ -211,7 +240,7 @@ function App() {
 						<Register onRegister={handleOnRegister} />
 					</Route>
 					<Route path="/sign-in">
-						<Login  handleLogin={handleLogin} />
+						<Login  onLogin={handleOnLogin} />
 					</Route>
 
 					<Route exact path="/">
@@ -232,6 +261,11 @@ function App() {
 							submitText = "Да"
 							isOpen = {isDeletePopupOpen}
 							onClose = {closeAllPopups} />
+				
+				<InfoPopup 
+							isOpen = {isInfoToolOpen}
+							onClose = {closeAllPopups} 
+							infoTool = {InfoToolValue} />
 
 				<ImagePopup 
 						isOpen = {isImagePopupOpen}

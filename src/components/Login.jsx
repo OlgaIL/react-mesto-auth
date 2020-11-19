@@ -1,27 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Form from './Form';
 
 
-import { useHistory } from 'react-router-dom';
-import {CurrentUserContext} from '../context/CurrentUserContext';
-
-import { setToken } from '../utils/token';
-import  userAuth from '../utils/auth';
-
-
 function Login (props) {
-	const currentUser = React.useContext(CurrentUserContext); // подписываем на контекст
-	//console.log(currentUser);
 
 	const [inputValue , setInputValue] = React.useState({
 			email: '',
 			password: ''
 		});
-
-	const [message, setMessage] = useState('');
-	const history = useHistory();
-
-
 	
 
 	function handleChange (event) {
@@ -41,47 +27,20 @@ function Login (props) {
 			return;
 		}
 	
-		//props.onAddPlace(inputValue);
+		props.onLogin(password, email);
 
-		userAuth.authorize(password, email)
-		.then((data) => {
-			if (!data){
-			setMessage('Что-то пошло не так!')
-			// вызвать инфо окно
-			}
-	
-		if (data.jwt) {
-			setToken(data.jwt);
-			setInputValue({ email: '', password: ''});
-			setMessage('');
-					console.log(data.user);
-			props.handleLogin(data.user);
-			history.push('/cards');
-		}
-	})
-		.catch(err => console.log(err));
-
-		
-		setTimeout(() =>{
+		setTimeout(() =>{ 
 			setInputValue({
-				name:'',
-				link:''
+				email:'',
+				password:''
 			});
 		}, 3000);
-		
-
 
 	}
 
 
 	return (
 		<main className="content__form">
-
-
-	 <p className="login__error">
-       {message}
-    </p>
-
 
 		<Form 
 			name = "login"

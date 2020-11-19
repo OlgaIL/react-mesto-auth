@@ -15,5 +15,12 @@ transition: opacity .4s;
 @media all and (max-width: 450px) {
 	.header__link {
 		font-size: 14px;
+
 	}
-  }
+}
+
+@media screen and (max-width: 900px) {
+	.header__link {
+		margin-right: 30px;
+	}
+}
