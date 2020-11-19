@@ -1,4 +1,3 @@
-import { setToken } from './token';
 export const BASE_URL = 'https://auth.nomoreparties.co';
 
 class Auth {
@@ -7,19 +6,6 @@ class Auth {
 		this.headers = apiData.headers;
 	}
 
-	_handleOriginalResponse = (res) => {
-		if (!res.ok) {
-			const errorMassage = {status: res.status};
-			if(res.status === 400){
-				errorMassage.statusText = 'некорректно заполнено одно из полей ';
-			} else {
-					errorMassage.statusText = res.statusText;
-					console.log(res.status);
-				};
-			return Promise.reject(errorMassage);
-		}
-		return res.json();
-	}
 
 
 	register (password, email) {
@@ -28,8 +14,18 @@ class Auth {
 			headers: this.headers,
 			body: JSON.stringify({password, email})
 			})
-			.then(this._handleOriginalResponse);
+			.then(response => {
+				//console.log(response);
+				if(!response.ok){
+					const errorMassage = {status: response.status};
+					if(response.status === 400){errorMassage.statusText = 'Некорректно заполнено одно из полей';}
+						return Promise.reject(errorMassage);
+				}
+				return response.json();
+			})
+			.then(data => data);
 	};
+
 
 	authorize (password, email) {
 		return fetch(`${BASE_URL}/signin`, {
@@ -37,15 +33,17 @@ class Auth {
 			headers: this.headers,
 			body: JSON.stringify({password, email})
 		})
-		.then((response => response.json()))
-		.then((data) => {
-			console.log(data);
-			if (data.token){
-					setToken (data.token);
-					return data;
-				} else {
-					return;}
-			})
+		.then(response => {
+			//console.log(response);
+			if(!response.ok){
+				const errorMassage = {status: response.status};
+				if(response.status === 400){errorMassage.statusText = 'Не передано одно из полей';}
+				if(response.status === 401){errorMassage.statusText = 'Пользователь с email не найден';}
+				return Promise.reject(errorMassage);
+			}
+			return response.json();
+		})
+		.then(data => data);
 	};
 
 	getContent (token) {
@@ -55,7 +53,15 @@ class Auth {
 			method: 'GET',
 			headers: this.headers
 			})
-			.then((response => response.json()))
+			.then(response => {
+						if(!response.ok){
+							const errorMassage = {status: response.status};
+							if(response.status === 400){errorMassage.statusText = 'Токен не передан или передан не в том формате';}
+							if(response.status === 401){errorMassage.statusText = 'Переданный токен некорректен';}
+						return Promise.reject(errorMassage);
+						}
+			return response.json();
+			})
 			.then(data => data);
 	};
 }

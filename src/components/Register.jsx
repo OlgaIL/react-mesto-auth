@@ -31,6 +31,7 @@ function Register (props) {
 	return (
 	<main className="content__form">
 		<Form 
+			page = {props.page}
 			name = "registration"
 			title = "Регистрация"
 			submitText = "Зарегистрироваться"

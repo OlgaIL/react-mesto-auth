@@ -4,11 +4,11 @@ import Profile from './Profile';
 import Enter from './Enter';
 
 /**{loggedIn ? <UserInfo / > : <NavReg />} */
-function Header({loggedIn, userData, onLogOut}) {
+function Header({loggedIn, userData, onLogOut, page}) {
 	return (
 		<header className="header">
 			<img src={logoMesto} className="header__logo" alt="Место" />
-			{ loggedIn ? <Profile onLogOut={onLogOut}  userData={userData} /> : <Enter /> }
+			{ loggedIn ? <Profile onLogOut={onLogOut}  userData={userData} /> : <Enter page = {page} /> }
 		</header>
 	);
 }

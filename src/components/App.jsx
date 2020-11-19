@@ -20,7 +20,7 @@ import ImagePopup from './ImagePopup';
 import InfoPopup from './InfoPopup';
 
 import api from '../utils/api';
-import  {getToken, removeToken} from '../utils/token';
+import  {setToken, getToken, removeToken} from '../utils/token';
 import  userAuth from '../utils/auth';
 
 
@@ -37,7 +37,6 @@ function App() {
 	const [currentUser, setCurrentUser] = React.useState(null);
 	const [cards, setCards] = React.useState([]);
 
-	const [isRegister , setIsRegister] = React.useState(false); // не регистрация
 	const [loggedIn , setIsLoggedIn] = React.useState(false);
 
 	const [isInfoToolOpen, setIsInfoToolOpen] = React.useState(false);
@@ -66,7 +65,8 @@ function App() {
 					history.push('/cards')
 				}
 				
-			});
+			})
+			.catch(err => console.log( err));
 	}
 
 
@@ -87,8 +87,12 @@ function App() {
 
 	useEffect(() => {
 		loadUserInfoandCards();
-		tokenCheck();
-	}, []);
+		}, []);
+
+	useEffect(() => {
+			tokenCheck();
+			}, []);
+
 
 
 	function handleEditAvatarClick () {
@@ -176,19 +180,18 @@ function App() {
 
 	function handleOnRegister (password, email) {
 		userAuth.register(password, email)
-			.then((res) => {
-				if (res) {
-				setInfoToolValue({infoText: 'Вы успешно зарегистрировались!', infoType: 'popup__info-image', name: 'Успешно'});
-				setIsInfoToolOpen(true);
-				setIsRegister(false); 
-				history.push('/sign-in');
+			.then((data) => {
+				console.log(data);
+				if (data) {
+					setInfoToolValue({infoText: 'Вы успешно зарегистрировались!', infoType: 'popup__info-image', name: 'Успешно'});
+					setIsInfoToolOpen(true);
+					history.push('/sign-in');
 				}
 			})
 			.catch((err) => {
-				setIsRegister(true);
-				setInfoToolValue({infoText: 'Что-то пошло не так! Попробуйте еще раз.', infoType: 'popup__info-image popup__info-image_err', name: 'Ошибка'});
+				setInfoToolValue({infoText: 'Что-то пошло не так! Попробуйте еще раз', infoType: 'popup__info-image popup__info-image_err', name: 'Ошибка'});
 				setIsInfoToolOpen(true);
-				console.log(err);
+				console.log(err)
 			});
 	}
 
@@ -197,17 +200,16 @@ function App() {
 		userAuth.authorize(password, email)
 			.then((res) => {
 				if (res.token) {
+					setToken (res.token);
 					setIsLoggedIn(true);
 					tokenCheck();
 					history.push('/cards');
-				}
+					}
 			})
 			.catch((err) => {
-				setInfoToolValue({infoText: 'Что-то пошло не так! Попробуйте еще раз.', infoType: 'popup__info-image popup__info-image_err', name: 'Ошибка'});
+				setInfoToolValue({infoText: 'Что-то пошло не так! Попробуйте еще раз', infoType: 'popup__info-image popup__info-image_err', name: 'Ошибка'});
 				setIsInfoToolOpen(true);
-				console.log(err);
-			});
-
+				console.log(err);});
 	}
 
 	function handleOnLoguot(){
@@ -243,7 +245,7 @@ function App() {
 						<Login  onLogin={handleOnLogin} />
 					</Route>
 
-					<Route exact path="/">
+					<Route exact path="/*">
 						{loggedIn ? <Redirect to="/cards" /> : <Redirect to="/sign-in" />}
 					</Route>
 

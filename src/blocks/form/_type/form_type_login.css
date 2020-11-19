@@ -1,7 +1,5 @@
 .form_type_login{
-	width: 447px;
-	background-color: seagreen;
-}
+	width: 447px;}
 
 @media all and (max-width: 500px) {
 	.form_type_login {

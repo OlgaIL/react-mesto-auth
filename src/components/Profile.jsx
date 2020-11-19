@@ -6,7 +6,7 @@ function Profile({userData, onLogOut}) {
 	}
 
 	return (
-		<ul className="navbarul">
+		<ul className="navbar">
 			<li className="navbar__element">{userData.email}</li> 
 			<li className="navbar__element"><button onClick={signOut} className="navbar__element navbar__button">Выйти</button></li>
 		</ul>

@@ -3,11 +3,11 @@ import {useLocation} from "react-router-dom";
 
 function Enter() {
 	const location = useLocation().pathname;
-	let enter = true;
-	if(location !== "/sign-in"){ enter = false} else { enter = true;};
+	let pageEnter = true;
+	if(location !== "/sign-in"){ pageEnter = false} else { pageEnter = true;};
 	
 	return (
-		<a className="header__link" href={enter ? '/sign-up' : '/sign-in' } >{ enter ? 'Регистрация' : 'Вход' }</a>
+		<a className="header__link" href={ pageEnter ? '/sign-up' : '/sign-in' } >{ pageEnter ? 'Регистрация' : 'Вход' }</a>
 	);
 }
 
