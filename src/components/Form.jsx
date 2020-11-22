@@ -1,5 +1,5 @@
 import React from 'react';
-import {useLocation} from "react-router-dom";
+import {useLocation, Link} from "react-router-dom";
 
 function Form ({name,title, onSubmit, children, submitText, onClose}) {
 	const location = useLocation().pathname;
@@ -16,7 +16,7 @@ function Form ({name,title, onSubmit, children, submitText, onClose}) {
 							</div>
 							<div className="form__element-login">
 								<input type="submit" value={submitText} className="form__submit form__submit_theme_dark"></input>
-								{ !pageEnter ? <a href="/sign-in" className="form__link">Уже зарегистрированы? Войти</a> : ''}
+								{ !pageEnter ? <Link to="/sign-in" className="form__link">Уже зарегистрированы? Войти</Link> : ''}
 							</div>
 						</div>
 				</form>
