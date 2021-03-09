@@ -11,3 +11,4 @@
 6. авторизация и регистрация
 -----------------------------------------------
 [Ссылка на проект](https://olgai.students.nomoredomains.rocks)
+testCustomer(www@yandex.ru / 123456789)
